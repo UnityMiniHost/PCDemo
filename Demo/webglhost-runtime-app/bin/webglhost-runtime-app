@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+
+/**
+ * WebGLHost Runtime App - Command Line Entry Point
+ * 
+ * 命令行入口文件，负责解析参数并启动应用
+ * 支持 Windows, macOS 和 Linux 平台
+ */
+
+const path = require('path');
+const os = require('os');
+
+// 检查Node.js版本
+const nodeVersion = process.version;
+const requiredVersion = '20.0.0';
+if (parseFloat(nodeVersion.slice(1)) < parseFloat(requiredVersion)) {
+  console.error(`❌ Node.js ${requiredVersion}+ is required. Current version: ${nodeVersion}`);
+  process.exit(1);
+}
+
+// 跨平台环境检测
+const platform = os.platform();
+const isWindows = platform === 'win32';
+const isMac = platform === 'darwin';
+const isLinux = platform === 'linux';
+
+console.log(`🚀 WebGLHost Runtime App starting on ${platform} (${os.arch()})`);
+
+// 检查是否在打包的应用中
+const isPackaged = (() => {
+  try {
+    return process.mainModule.filename.indexOf('app.asar') !== -1;
+  } catch (e) {
+    return false;
+  }
+})();
+
+const { CommandParser } = require('../src/CommandParser');
+const { GameLauncher } = require('../src/GameLauncher');
+const { ConsoleUI } = require('../src/ConsoleUI');
+
+async function main() {
+  try {
+    // 解析命令行参数
+    const parser = new CommandParser();
+    const options = parser.parse(process.argv);
+    
+    // 显示帮助信息
+    if (options.help) {
+      parser.showHelp();
+      process.exit(0);
+    }
+    
+    // 显示版本信息
+    if (options.version) {
+      const packageJson = require('../package.json');
+      console.log(`WebGLHost Runtime App v${packageJson.version}`);
+      process.exit(0);
+    }
+    
+    // 验证必要参数
+    if (!options.launchKey) {
+      console.error('Error: --launch-key is required');
+      parser.showHelp();
+      process.exit(1);
+    }
+    
+    // 初始化控制台界面
+    const consoleUI = new ConsoleUI();
+    consoleUI.showBanner();
+    
+    // 创建游戏启动器
+    const launcher = new GameLauncher(options);
+    
+    // 启动游戏
+    const gameHandle = await launcher.launchGame(
+      options.gameId, 
+      options.launchKey, 
+      options
+    );
+    
+    // 显示启动成功信息
+    consoleUI.showSuccess(`Game "${options.gameId}" launched successfully`);
+    consoleUI.showGameInfo(gameHandle);
+    
+    // 平台特定的信号处理
+    const shutdownHandler = async (signal) => {
+      consoleUI.showInfo(`Received ${signal}, shutting down...`);
+      try {
+        await launcher.shutdown();
+      } catch (error) {
+        consoleUI.showError('Error during shutdown:', error);
+      }
+      process.exit(0);
+    };
+    
+    // SIGINT (Ctrl+C) - 所有平台
+    process.on('SIGINT', () => shutdownHandler('SIGINT'));
+    
+    // SIGTERM - Unix/Linux/macOS
+    if (!isWindows) {
+      process.on('SIGTERM', () => shutdownHandler('SIGTERM'));
+    }
+    
+    // Windows特定的退出处理
+    if (isWindows) {
+      process.on('SIGBREAK', () => shutdownHandler('SIGBREAK'));
+      // Windows控制台关闭事件
+      if (process.stdin.isTTY) {
+        process.stdin.setRawMode(true);
+        process.stdin.on('keypress', (str, key) => {
+          if (key && key.ctrl && key.name === 'c') {
+            shutdownHandler('Ctrl+C');
+          }
+        });
+      }
+    }
+    
+  } catch (error) {
+    console.error('Fatal error:', error.message);
+    console.error(error.stack);
+    process.exit(1);
+  }
+}
+
+// 启动应用
+if (require.main === module) {
+  main();
+}
+
+module.exports = { main }; 
