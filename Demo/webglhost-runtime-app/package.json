@@ -81,7 +81,7 @@
   },
   "build": {
     "appId": "com.webglhost.runtime-app-demo",
-    "productName": "WebGLHostRuntimeAppDemo",
+    "productName": "WebGLHostRuntimeApp",
     "copyright": "Copyright © 2025 UnityMiniHost",
     "icon": "assets/unitylogo.png",
     "directories": {
