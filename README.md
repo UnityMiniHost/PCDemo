@@ -7,8 +7,8 @@ WebGLHost PC SDK的完整示例项目，展示如何使用SDK构建桌面游戏�
 ```
 PCDemo/
 ├── SDK/                              # 预构建的SDK包
-│   ├── webglhost-sdk-1.0.0.tgz       # SDK核心包
-│   └── webglhost-runtime-pc-1.0.0.tgz  # PC运行时包
+│   ├── webglhost-sdk.tgz             # SDK核心包
+│   └── webglhost-runtime-pc.tgz      # PC运行时包
 ├── Demo/                             # 示例应用
     └── webglhost-runtime-app/        # 完整的应用示例
 
