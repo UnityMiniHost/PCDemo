@@ -58,3 +58,5 @@ temp/
 # Electron specific
 **/electron-builder.yml.bak
 
+version.json
+
