@@ -1,18 +1,20 @@
 {
   "name": "webglhost-runtime-app",
   "version": "1.0.4",
-  "description": "PC Runtime App - Command line WebGL game host application",
+  "description": "PC Runtime App Demo - Command line WebGL game host application",
   "main": "src/index.js",
   "bin": {
-    "webglhost-runtime-app": "./bin/webglhost-runtime-app"
+    "webglhost-runtime-app-demo": "./bin/webglhost-runtime-app-demo"
   },
   "scripts": {
     "start": "electron src/index.js --config config/development.json --log-file logs/app.log",
     "dev": "cross-env NODE_ENV=development electron src/index.js --config config/development.json --log-file logs/app-dev.log",
     "build": "node scripts/build.js",
-    "install:sdk": "npm install ../../SDK/webglhost-sdk-1.0.0.tgz ../../SDK/webglhost-runtime-pc-1.0.0.tgz --force --legacy-peer-deps",
+    "install:sdk": "npm install ../../SDK/webglhost-sdk.tgz ../../SDK/webglhost-runtime-pc.tgz --no-save --force --legacy-peer-deps",
+    "prebuild:windows": "npm install --include=dev",
     "build:windows": "cross-env NODE_ENV=production node scripts/build.js --platform win32 && node scripts/package-windows.js",
     "build:windows-debug": "cross-env NODE_ENV=development node scripts/build.js --platform win32 && node scripts/package-windows.js",
+    "prebuild:mac": "npm install --include=dev",
     "build:mac": "cross-env NODE_ENV=production node scripts/build.js --platform darwin && node scripts/package-mac.js",
     "build:mac-debug": "cross-env NODE_ENV=development node scripts/build.js --platform darwin && node scripts/package-mac.js",
     "build:linux": "electron-builder --linux",
@@ -47,7 +49,7 @@
   "author": "UnityMiniHost",
   "license": "MIT",
   "dependencies": {
-    "@webglhost/sdk": "file:../../SDK/webglhost-sdk-1.0.0.tgz",
+    "@webglhost/sdk": "file:../../SDK/webglhost-sdk.tgz",
     "axios": "^1.11.0",
     "chalk": "^5.3.0",
     "commander": "^11.0.0",
@@ -58,7 +60,7 @@
     "ora": "^7.0.1",
     "os": "^0.1.2",
     "path": "^0.12.7",
-    "webglhost-runtime-pc": "file:../../SDK/webglhost-runtime-pc-1.0.0.tgz",
+    "webglhost-runtime-pc": "file:../../SDK/webglhost-runtime-pc.tgz",
     "winston": "^3.11.0",
     "yaml": "^2.3.4"
   },
@@ -77,16 +79,8 @@
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webglhost/webglhost-runtime-app.git"
-  },
-  "bugs": {
-    "url": "https://github.com/webglhost/webglhost-runtime-app/issues"
-  },
-  "homepage": "https://github.com/webglhost/webglhost-runtime-app#readme",
   "build": {
-    "appId": "com.webglhost.runtime-app",
+    "appId": "com.webglhost.runtime-app-demo",
     "productName": "WebGLHostRuntimeApp",
     "copyright": "Copyright © 2025 UnityMiniHost",
     "icon": "assets/unitylogo.png",
@@ -195,18 +189,18 @@
       "allowElevation": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "WebGLHost Runtime App",
+      "shortcutName": "WebGLHost Runtime App Demo",
       "deleteAppDataOnUninstall": false,
       "runAfterFinish": false,
       "menuCategory": "Games",
-      "artifactName": "WebGLHost-Runtime-App-Setup-${version}.${ext}",
+      "artifactName": "WebGLHost-Runtime-App-Demo-Setup-${version}.${ext}",
       "perMachine": true,
       "packElevateHelper": true,
       "removeDefaultUninstallWelcomePage": false,
-      "guid": "cn.tuanjie.minihost.runtime-app"
+      "guid": "cn.tuanjie.minihost.runtime-app-demo"
     },
     "dmg": {
-      "title": "WebGLHost Runtime App",
+      "title": "WebGLHost Runtime App Demo",
       "backgroundColor": "#ffffff",
       "window": {
         "width": 600,

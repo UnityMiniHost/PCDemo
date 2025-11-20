@@ -175,15 +175,14 @@ async function build() {
     try {
       execSync('npm run install:sdk', { stdio: 'inherit' });
       console.log('✅ SDK dependencies installed successfully');
+      
+      // install:sdk may remove devDependencies, reinstall them for build tools
+      console.log('📦 Ensuring build tools are available...');
+      execSync('npm install --include=dev --no-save', { stdio: 'inherit' });
+      console.log('✅ Build tools ready');
     } catch (error) {
-      console.warn('⚠️ SDK install failed:', error.message);
-      console.log('Trying alternative installation method...');
-      try {
-        execSync('npm install ../../SDK/webglhost-sdk-1.0.0.tgz ../../SDK/webglhost-runtime-pc-1.0.0.tgz --force --legacy-peer-deps', { stdio: 'inherit' });
-      } catch (retryError) {
-        console.error('❌ SDK installation failed. Please run: npm run install:sdk');
-        process.exit(1);
-      }
+      console.warn('⚠️ Dependency installation failed:', error.message);
+      process.exit(1);
     }
 
     // 4. 生成版本文件

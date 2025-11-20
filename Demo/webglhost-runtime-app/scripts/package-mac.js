@@ -249,7 +249,7 @@ async function signAppBundle(appBundlePath, verbose = true) {
 /**
  * 优化单个Mac app bundle
  */
-async function optimizeSingleMacBundle(sourceAppBundle, distDir) {
+async function optimizeSingleMacBundle(sourceAppBundle, distDir, productName) {
   console.log(`\\n📱 Processing: ${path.relative(distDir, sourceAppBundle)}`);
   
   // 自动检测架构
@@ -262,9 +262,9 @@ async function optimizeSingleMacBundle(sourceAppBundle, distDir) {
   } else if (bundleDirName === 'mac-x64') {
     detectedArch = 'x64';
   } else if (bundleDirName === 'mac') {
-    // 尝试从app bundle中检测架构
+    // Try to detect architecture from app bundle executable
     try {
-      const executablePath = path.join(sourceAppBundle, 'Contents', 'MacOS', 'WebGLHostRuntimeApp');
+      const executablePath = path.join(sourceAppBundle, 'Contents', 'MacOS', productName.replace('.app', ''));
       if (fs.existsSync(executablePath)) {
         const fileOutput = execSync(`file "${executablePath}"`, { encoding: 'utf8' });
         if (fileOutput.includes('arm64')) {
@@ -536,21 +536,34 @@ async function createOptimizedMacPackages() {
     
     const distDir = path.join(__dirname, '..', 'dist');
     
-    // 查找所有可用的app bundle
+    // Read productName from package.json
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    const productName = packageJson.build?.productName || 'WebGLHostRuntimeApp';
+    const appBundleName = `${productName}.app`;
+    
+    console.log(`📦 Looking for app bundle: ${appBundleName}`);
+    
+    // Search for all available app bundles with dynamic product name
     const possibleAppBundles = [
-      { path: path.join(distDir, 'mac-arm64', 'WebGLHostRuntimeApp.app'), priority: 1 },
-      { path: path.join(distDir, 'mac-x64', 'WebGLHostRuntimeApp.app'), priority: 2 },
-      { path: path.join(distDir, 'mac', 'WebGLHostRuntimeApp.app'), priority: 3 },
-      { path: path.join(distDir, 'WebGLHostRuntimeApp.app'), priority: 4 }
+      { path: path.join(distDir, 'mac-arm64', appBundleName), priority: 1 },
+      { path: path.join(distDir, 'mac-x64', appBundleName), priority: 2 },
+      { path: path.join(distDir, 'mac', appBundleName), priority: 3 },
+      { path: path.join(distDir, appBundleName), priority: 4 }
     ];
     
-    // 找到所有存在的app bundle
+    // Find all existing app bundles
     const existingBundles = possibleAppBundles
       .filter(bundle => fs.existsSync(bundle.path))
       .sort((a, b) => a.priority - b.priority);
     
     if (existingBundles.length === 0) {
       console.error('❌ No Mac app bundles found. Please build the app first.');
+      console.error(`   Expected bundle name: ${appBundleName}`);
+      console.error(`   Searched locations:`);
+      possibleAppBundles.forEach(bundle => {
+        console.error(`     - ${bundle.path}`);
+      });
       process.exit(1);
     }
     
@@ -561,10 +574,10 @@ async function createOptimizedMacPackages() {
     
     const results = [];
     
-    // 处理每个找到的app bundle
+    // Process each found app bundle
     for (const bundle of existingBundles) {
       try {
-        const result = await optimizeSingleMacBundle(bundle.path, distDir);
+        const result = await optimizeSingleMacBundle(bundle.path, distDir, productName);
         results.push(result);
       } catch (error) {
         console.error(`❌ Failed to optimize ${path.relative(distDir, bundle.path)}: ${error.message}`);
