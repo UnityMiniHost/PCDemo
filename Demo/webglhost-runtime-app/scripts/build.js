@@ -170,19 +170,24 @@ async function build() {
       console.warn('⚠️ Clean failed, continuing...', error.message);
     }
 
-    // 2. 安装SDK依赖（从PCDemo/SDK目录）
-    console.log('📦 Installing SDK dependencies...');
-    try {
-      execSync('npm run install:sdk', { stdio: 'inherit' });
-      console.log('✅ SDK dependencies installed successfully');
-      
-      // install:sdk may remove devDependencies, reinstall them for build tools
-      console.log('📦 Ensuring build tools are available...');
-      execSync('npm install --include=dev --no-save', { stdio: 'inherit' });
-      console.log('✅ Build tools ready');
-    } catch (error) {
-      console.warn('⚠️ Dependency installation failed:', error.message);
+    // 2. Verify SDK is installed (managed by postinstall)
+    console.log('📋 Checking SDK installation...');
+    const sdkPath = path.join(__dirname, '..', 'node_modules', '@webglhost', 'sdk');
+    if (!fs.existsSync(sdkPath)) {
+      console.error('❌ SDK not found. Please run: npm install');
+      console.log('💡 Tip: npm install will automatically update SDK via postinstall hook');
       process.exit(1);
+    }
+    
+    // Display SDK version being used
+    try {
+      const versionPath = path.join(sdkPath, 'dist', 'version.json');
+      if (fs.existsSync(versionPath)) {
+        const version = JSON.parse(fs.readFileSync(versionPath, 'utf-8'));
+        console.log(`✅ Using SDK: v${version.version} (${version.buildMode}, built at ${version.buildDate})`);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not read SDK version:', error.message);
     }
 
     // 4. 生成版本文件
