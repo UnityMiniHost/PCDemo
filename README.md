@@ -14,23 +14,6 @@ PCDemo/
 
 ```
 
-## 🚀 快速开始
-
-### 方法：手动构建
-
-```bash
-cd Demo/webglhost-runtime-app
-
-# 安装依赖
-npm install
-
-# 构建Windows应用
-npm run build:windows
-
-# 构建macOS应用
-npm run build:mac
-```
-
 ## 📋 系统要求
 
 - **Node.js** >= 20
@@ -42,6 +25,9 @@ npm run build:mac
 
 ```bash
 cd Demo/webglhost-runtime-app
+
+# 安装依赖
+npm install
 
 # Windows
 npm run build:windows        # Release版本
