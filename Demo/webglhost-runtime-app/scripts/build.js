@@ -170,24 +170,21 @@ async function build() {
       console.warn('⚠️ Clean failed, continuing...', error.message);
     }
 
-    // 2. Verify SDK is installed (managed by postinstall)
-    console.log('📋 Checking SDK installation...');
-    const sdkPath = path.join(__dirname, '..', 'node_modules', '@webglhost', 'sdk');
-    if (!fs.existsSync(sdkPath)) {
-      console.error('❌ SDK not found. Please run: npm install');
-      console.log('💡 Tip: npm install will automatically update SDK via postinstall hook');
-      process.exit(1);
-    }
-    
-    // Display SDK version being used
+    // 2. 验证依赖完整性
+    // Note: Dependencies should be installed before build via 'npm install'
+    // Only refresh SDK packages if needed, without affecting devDependencies
+    console.log('📦 Verifying dependencies...');
     try {
-      const versionPath = path.join(sdkPath, 'dist', 'version.json');
-      if (fs.existsSync(versionPath)) {
-        const version = JSON.parse(fs.readFileSync(versionPath, 'utf-8'));
-        console.log(`✅ Using SDK: v${version.version} (${version.buildMode}, built at ${version.buildDate})`);
+      // Check if javascript-obfuscator exists (required for production build)
+      const obfuscatorPath = path.join(__dirname, '..', 'node_modules', 'javascript-obfuscator');
+      if (!fs.existsSync(obfuscatorPath)) {
+        console.log('📦 DevDependencies missing, running npm install...');
+        execSync('npm install', { stdio: 'inherit' });
       }
+      console.log('✅ Dependencies verified');
     } catch (error) {
-      console.warn('⚠️ Could not read SDK version:', error.message);
+      console.warn('⚠️ Dependencies verification failed:', error.message);
+      process.exit(1);
     }
 
     // 4. 生成版本文件

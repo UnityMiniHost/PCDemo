@@ -285,8 +285,7 @@ function optimizeUnpackedDirectory(unpackedDir) {
     'classic_level.iobj',     // 调试对象文件
     'leveldb.lib',            // 静态库文件
     'vk_swiftshader.dll',     // Vulkan软件渲染器 (10MB+) - 大多数情况下不需要
-    'd3dcompiler_47.dll',     // Direct3D编译器 (9MB+) - 可选
-    // 注意：icudtl.dat 是必需的，不能删除！
+     // 注意：icudtl.dat 是必需的，不能删除！
   ];
   
   console.log('   🛠️ Removing optional development files...');
@@ -312,7 +311,7 @@ function optimizeUnpackedDirectory(unpackedDir) {
     if (fs.existsSync(filePath)) {
       const fileSize = fs.statSync(filePath).size;
       // 只有当主exe存在时才删除electron.exe
-      const mainExePath = path.join(unpackedDir, 'WebGLHostRuntimeApp.exe');
+      const mainExePath = path.join(unpackedDir, 'WebGLHostRuntimeAppDemo.exe');
       if (fs.existsSync(mainExePath) && removeFile(filePath)) {
         savedSize += fileSize;
         console.log(`      Removed ${file} (${(fileSize / 1024 / 1024).toFixed(2)} MB)`);
@@ -460,9 +459,9 @@ async function createOptimizedPortablePackage() {
       process.exit(1);
     }
     
-    const mainExePath = path.join(winUnpackedDir, 'WebGLHostRuntimeApp.exe');
+    const mainExePath = path.join(winUnpackedDir, 'WebGLHostRuntimeAppDemo.exe');
     if (!fs.existsSync(mainExePath)) {
-      console.error('❌ WebGLHostRuntimeApp.exe not found!');
+      console.error('❌ WebGLHostRuntimeAppDemo.exe not found!');
       process.exit(1);
     }
     

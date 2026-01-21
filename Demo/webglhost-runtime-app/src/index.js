@@ -119,6 +119,85 @@ let globalRunningGames = new Map(); // gameId -> { appInstance, gameHandle, time
 // 暴露为全局变量，以便GameLauncher等模块可以访问
 global.globalRunningGames = globalRunningGames;
 
+// Global exception handlers to prevent process crash
+// These handlers catch unhandled exceptions and rejections, log them, and prevent crash
+
+/**
+ * Get cross-platform crash log directory
+ * - macOS: ~/Library/Logs/WebGLHostRuntimeApp
+ * - Windows: %APPDATA%/WebGLHostRuntimeApp/logs
+ * - Linux: ~/.config/WebGLHostRuntimeApp/logs
+ */
+function getCrashLogDir() {
+  const fs = require('fs');
+  const path = require('path');
+  const os = require('os');
+  
+  let logDir;
+  if (process.platform === 'darwin') {
+    // macOS
+    logDir = path.join(os.homedir(), 'Library', 'Logs', 'WebGLHostRuntimeApp');
+  } else if (process.platform === 'win32') {
+    // Windows - use APPDATA
+    logDir = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'WebGLHostRuntimeApp', 'logs');
+  } else {
+    // Linux and others
+    logDir = path.join(os.homedir(), '.config', 'WebGLHostRuntimeApp', 'logs');
+  }
+  
+  return logDir;
+}
+
+/**
+ * Write crash log to file
+ */
+function writeCrashLogToFile(type, errorMsg, stack, extra = '') {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const logDir = getCrashLogDir();
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+    
+    const logFile = path.join(logDir, 'crash.log');
+    const timestamp = new Date().toISOString();
+    const logEntry = `[${timestamp}] ${type}: ${errorMsg}${extra}\nStack: ${stack}\n\n`;
+    fs.appendFileSync(logFile, logEntry);
+    console.log(`Crash log written to: ${logFile}`);
+  } catch (logError) {
+    console.error('Failed to write crash log:', logError);
+  }
+}
+
+process.on('uncaughtException', (error, origin) => {
+  console.error('[FATAL] Uncaught Exception:', error);
+  console.error('Exception origin:', origin);
+  console.error('Stack trace:', error.stack);
+  
+  // Write to crash log file (cross-platform)
+  writeCrashLogToFile('Uncaught Exception', error.message, error.stack, `\nOrigin: ${origin}`);
+  
+  // Don't exit - allow the app to continue if possible
+  // In production, you might want to show an error dialog and gracefully shutdown
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled Promise Rejection:', reason);
+  console.error('Promise:', promise);
+  if (reason instanceof Error) {
+    console.error('Stack trace:', reason.stack);
+  }
+  
+  // Write to crash log file (cross-platform)
+  const errorMsg = reason instanceof Error ? reason.message : String(reason);
+  const stack = reason instanceof Error ? reason.stack : 'No stack trace';
+  writeCrashLogToFile('Unhandled Rejection', errorMsg, stack);
+  
+  // Don't exit - allow the app to continue if possible
+});
+
 // 如果在 Electron 环境中，初始化 Electron
 if (isElectron) {
   const { app, ipcMain } = require('electron');
