@@ -41,7 +41,7 @@ npm install ./webglhost-sdk.tgz ./webglhost-runtime-pc.tgz
   "dependencies": {
     "@webglhost/sdk": "file:./webglhost-sdk.tgz",
     "webglhost-runtime-pc": "file:./webglhost-runtime-pc.tgz",
-    "electron": "^36.0.0"
+    "electron": "^39.2.0"
   }
 }
 ```

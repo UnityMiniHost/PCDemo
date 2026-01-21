@@ -11,7 +11,6 @@
   "retryCount": 5,
   "logLevel": "debug",
   "logFile": "./logs/development.log",
-  "gameId": "123",
   "GAME_HOST_BASE_URL": "https://minihost.tuanjie.cn",
   "API_VERSION": "v1",
   "APP_VERSION": "1.0.0",
