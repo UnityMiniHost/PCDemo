@@ -1,0 +1,16 @@
+{
+  "name": "webglhost-runtime-app",
+  "version": "1.0.4",
+  "description": "PC Runtime App Demo - Command line WebGL game host application",
+  "buildDate": "2026-01-26T09:09:09.679Z",
+  "buildMode": "production",
+  "git": {
+    "commitHash": "9701d5b",
+    "commitHashFull": "9701d5b1774ff4b89a6b5cac40dfea0e94397d02",
+    "branch": "main"
+  },
+  "platform": "darwin",
+  "arch": "arm64",
+  "nodeVersion": "v20.19.0",
+  "electronVersion": "^39.2.0"
+}

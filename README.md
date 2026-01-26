@@ -1,163 +1,83 @@
-# PCDemo - WebGLHost PC SDK 示例项目
+# WebGLHost PC SDK Demo
 
-WebGLHost PC SDK的完整示例项目，展示如何使用SDK构建桌面游戏宿主应用。
+WebGLHost PC SDK 示例项目集合，展示如何在 Windows 和 macOS 桌面应用中集成 WebGL 游戏。
 
-## 📦 项目结构
+## 项目结构
 
 ```
 PCDemo/
-├── SDK/                              # 预构建的SDK包
-│   ├── webglhost-sdk.tgz             # SDK核心包
-│   └── webglhost-runtime-pc.tgz      # PC运行时包
-├── Demo/                             # 示例应用
-    └── webglhost-runtime-app/        # 完整的应用示例
-
+├── PCDemo_cpp/     # C++ SDK 示例项目
+├── PCDemo_js/      # JavaScript SDK 示例项目
+└── README.md       # 本文件
 ```
 
-## 📋 系统要求
+## 示例项目
 
-- **Node.js** >= 20
-- **npm** >= 10
-- **操作系统**: Windows 10+、macOS 10.14+
+### PCDemo_cpp - C++ SDK Demo
 
+使用原生 C++ 集成 WebGLHost SDK，适用于需要原生性能和直接系统访问的应用。
 
-## 🔧 构建命令
+**特点**：
+- 原生 C++ 实现
+- 跨平台支持 (Windows + macOS)
+- CMake 构建系统
+- 自动获取游戏列表并启动
 
+**快速开始**：
 ```bash
-cd Demo/webglhost-runtime-app
+cd PCDemo_cpp
+
+# Windows
+scripts\build-and-run.bat
+
+# macOS
+./scripts/build-and-run.sh
+```
+
+详细文档请参阅 [PCDemo_cpp/README.md](./PCDemo_cpp/README.md)
+
+### PCDemo_js - JavaScript SDK Demo
+
+使用 JavaScript/Node.js 集成 WebGLHost SDK，基于 Electron 框架，适用于快速开发和 Web 技术栈团队。
+
+**特点**：
+- JavaScript/Node.js 实现
+- 基于 Electron 框架
+- 完整的应用示例
+- 预构建的 SDK 包
+
+**快速开始**：
+```bash
+cd PCDemo_js/Demo/webglhost-runtime-app
 
 # 安装依赖
 npm install
 
-# Windows
-npm run build:windows        # Release版本
-npm run build:windows-debug  # Debug版本
-
-# macOS
-npm run build:mac            # Release版本
-npm run build:mac-debug      # Debug版本
-
 # 开发运行
 npm run dev
 
-# 清理
-npm run clean
+# 构建
+npm run build:mac     # macOS
+npm run build:windows # Windows
 ```
 
-## 📦 构建产物
+详细文档请参阅 [PCDemo_js/README.md](./PCDemo_js/README.md)
 
-### Windows
+## 系统要求
 
-```
-dist/
-└── WebGLHost-Runtime-App-Portable-win-x64.zip
-```
+### C++ SDK (PCDemo_cpp)
+- **Windows**: Windows 10+, Visual Studio 2019+, CMake 3.15+
+- **macOS**: macOS 10.15+, Xcode Command Line Tools, CMake 3.15+
 
-### macOS
+### JavaScript SDK (PCDemo_js)
+- **Node.js**: >= 20
+- **npm**: >= 10
+- **操作系统**: Windows 10+, macOS 10.14+
 
-```
-dist/
-├── WebGLHostRuntimeApp-1.0.4-darwin-arm64-mac.tar.gz  # Apple Silicon
-├── WebGLHostRuntimeApp-1.0.4-darwin-x64-mac.tar.gz    # Intel
-├── WebGLHostRuntimeApp-1.0.4-darwin-arm64-mac.zip     # Apple Silicon
-└── WebGLHostRuntimeApp-1.0.4-darwin-x64-mac.zip       # Intel
-```
+## 许可证
 
-## 🎯 主要功能
+请参阅 [LICENSE](./LICENSE) 文件。
 
-### SDK包
-
-- ✅ 预构建的SDK核心包
-- ✅ PC平台运行时包
-- ✅ 完整的API支持
-- ✅ TypeScript类型定义
-
-### 示例应用
-
-- ✅ 完整的源代码
-- ✅ 构建脚本
-- ✅ 配置示例
-- ✅ 自定义脚本示例
-
-## 🎓 学习资源
-
-### 示例代码
-
-查看 `Demo/webglhost-runtime-app/src/` 目录：
-
-- `index.js` - 应用入口
-- `GameLauncher.js` - 游戏启动器
-- `GameManager.js` - 游戏管理
-- `CommandParser.js` - 命令解析
-
-### 配置示例
-
-查看 `Demo/webglhost-runtime-app/config/` 目录：
-
-- `development.json` - 开发配置
-
-### 自定义脚本
-
-查看 `Demo/webglhost-runtime-app/customScripts/` 目录：
-
-- `auth.js` - 认证脚本示例
-- `ad.js` - 广告脚本示例
-
-## 🔄 开发工作流
-
-### 1. 首次设置
-
-```bash
-cd Demo/webglhost-runtime-app
-npm install
-```
-
-### 2. 开发调试
-
-```bash
-npm run dev
-```
-
-### 3. 构建测试
-
-```bash
-npm run build:mac-debug
-```
-
-### 4. 生产构建
-
-```bash
-npm run build:mac
-```
-
-## ❓ 常见问题
-
-### Q: npm install 报错
-
-**A**: 确保使用了正确的Node.js版本（>= 20.0.0）
-
-```bash
-node --version
-npm --version
-```
-
-### Q: 构建失败
-
-**A**: 检查以下几点：
-1. SDK包是否存在于 `SDK/` 目录
-2. 依赖是否正确安装
-3. 查看构建日志中的错误信息
-
-### Q: 如何更新SDK
-
-**A**: 替换 `SDK/` 目录中的 `.tgz` 文件，然后重新安装：
-
-```bash
-cd Demo/webglhost-runtime-app
-rm -rf node_modules package-lock.json
-npm install
-```
-
-## 📞 技术支持
+## 技术支持
 
 如有问题，请联系技术支持团队。

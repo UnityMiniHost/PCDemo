@@ -1,0 +1,42 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source code - let Git auto-detect line endings
+# This avoids conflicts on Windows while maintaining consistency
+*.js text
+*.ts text
+*.json text
+*.md text
+*.yml text
+*.yaml text
+
+# Shell scripts - must use LF for cross-platform compatibility
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts - must use CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+
+# Archive files
+*.tgz binary
+*.tar.gz binary
+*.zip binary
+*.7z binary
+
+# Application binaries
+*.exe binary
+*.app binary
+*.dmg binary
+
+# Git LFS for large files
+runtime/webglhost-runtime.exe filter=lfs diff=lfs merge=lfs -text
